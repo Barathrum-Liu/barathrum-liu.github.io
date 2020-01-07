@@ -145,6 +145,109 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-的一个坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/07/%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/">libvirt-go 的一个坑</a>
+    </h1>
+  
+
+        
+        <a href="/2020/01/07/%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/" class="archive-article-date">
+  	<time datetime="2020-01-07T14:54:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天和聂工在研究怎么用<a href="https://github.com/libvirt/libvirt-go" target="_blank" rel="noopener">libvirt-go</a> 时，发现GetFreepages 有bug，demo 一跑就报错<code>virError(Code=9, Domain=0, Message=&#39;operation failed: page size 679968 is not available on node 0&#39;)</code>.</p>
+<p>其中这个<code>page size 679968</code>每次跑还会变化。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">        <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">        libvirt <span class="string">"github.com/libvirt/libvirt-go"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">        conn, err := libvirt.NewConnect(<span class="string">"qemu:///system"</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">defer</span> conn.Close()</span><br><span class="line"></span><br><span class="line">        doms, err := conn.ListAllDomains(libvirt.CONNECT_LIST_DOMAINS_ACTIVE)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        fmt.Println(conn.GetFreePages([]<span class="keyword">uint64</span>&#123;<span class="number">4</span>, <span class="number">2048</span>, <span class="number">1048576</span>&#125;, <span class="number">0</span>, <span class="number">1</span>, <span class="keyword">uint32</span>(<span class="number">0</span>)))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用qemu+tcp 的方式去测试，抓包发现发送给libvirtd 的指令里这个参数就已经是错的，也就是问题出现在客户端这边。同时聂工也测试过python，python 的libvirt 库没这个毛病。</p>
+<p>之后开始debug，因为CentOS 8 没有libvirt-devel 的debuginfo，去CentOS 7 重新装了下环境，还是能复现问题，用gdb 看到这部分进到cgo 里了，源码一顿乱翻，在<a href="https://github.com/libvirt/libvirt-go/blob/master/connect.go#L1900" target="_blank" rel="noopener">GetFreePages</a> 的代码里可以看到这就是个对C 的封装，里面用了go 的unsafe 想把go 的slice 转换成c 的数组。</p>
+<p>但代码里有一个bug，这玩意是用virNodeGetFreePagesWrapper 调用C 库的，在传递之前，先弄了cpageSizes 和ccounts 俩slice，然后用unsafe 直接把slice 的地址转成int 型指针了了：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Connect)</span> <span class="title">GetFreePages</span><span class="params">(pageSizes []<span class="keyword">uint64</span>, startCell <span class="keyword">int</span>, maxCells <span class="keyword">uint</span>, flags <span class="keyword">uint32</span>)</span> <span class="params">([]<span class="keyword">uint64</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> C.LIBVIR_VERSION_NUMBER &lt; <span class="number">1002006</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> []<span class="keyword">uint64</span>&#123;&#125;, makeNotImplementedError(<span class="string">"virNodeGetFreePages"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	cpageSizes := <span class="built_in">make</span>([]C.<span class="keyword">uint</span>, <span class="built_in">len</span>(pageSizes))                    <span class="comment">//这俩slice</span></span><br><span class="line">	ccounts := <span class="built_in">make</span>([]C.ulonglong, <span class="built_in">len</span>(pageSizes)*<span class="keyword">int</span>(maxCells))    <span class="comment">//这俩slice</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(pageSizes); i++ &#123;</span><br><span class="line">		cpageSizes[i] = C.<span class="keyword">uint</span>(pageSizes[i])</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> err C.virError</span><br><span class="line">	ret := C.virNodeGetFreePagesWrapper(c.ptr, C.<span class="keyword">uint</span>(<span class="built_in">len</span>(pageSizes)), (*C.<span class="keyword">uint</span>)(unsafe.Pointer(&amp;cpageSizes)), C.<span class="keyword">int</span>(startCell),</span><br><span class="line">		C.<span class="keyword">uint</span>(maxCells), (*C.ulonglong)(unsafe.Pointer(&amp;ccounts)), C.<span class="keyword">uint</span>(flags), &amp;err) <span class="comment">// 就这做的unsafe</span></span><br><span class="line">	<span class="keyword">if</span> ret == <span class="number">-1</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> []<span class="keyword">uint64</span>&#123;&#125;, makeError(&amp;err)</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这玩意的函数签名如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span></span><br><span class="line">virNodeGetFreePagesWrapper(virConnectPtr conn,</span><br><span class="line">                           <span class="keyword">unsigned</span> <span class="keyword">int</span> npages,</span><br><span class="line">                           <span class="keyword">unsigned</span> <span class="keyword">int</span> *pages,</span><br><span class="line">                           <span class="keyword">int</span> startCell,</span><br><span class="line">                           <span class="keyword">unsigned</span> <span class="keyword">int</span> cellCount,</span><br><span class="line">                           <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> *counts,</span><br><span class="line">                           <span class="keyword">unsigned</span> <span class="keyword">int</span> flags,</span><br><span class="line">                           virErrorPtr err);</span><br></pre></td></tr></table></figure>
+
+<p>这里有一个问题，go 的slice 实现大概是这样的（取自CSDN<a href="https://blog.csdn.net/qcrao/article/details/90762019" target="_blank" rel="noopener">深度解密Go语言之unsafe</a>：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// runtime/slice.go	</span></span><br><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;	</span><br><span class="line">    array unsafe.Pointer <span class="comment">// 元素指针	</span></span><br><span class="line">    <span class="built_in">len</span>   <span class="keyword">int</span> <span class="comment">// 长度	</span></span><br><span class="line">    <span class="built_in">cap</span>   <span class="keyword">int</span> <span class="comment">// 容量	</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一个slice 里有三个成员，其中第一个成员array 是个指针，它指向的是一个数组，也就是说直接把slice 转成uint * 是有问题的，这样转换完得到的其实是slice 指针，而我们需要的<code>unsigned int *pages</code>其实是最终数组的首地址，也就是array 的值，所以需要把它的第一个成员也就是array 的值拿出来才对，不然的话我们拿到的是slice 的地址。</p>
+<p>之后用gdb 跟了一下，果然<code>page size 679968</code> 中的数字是array 的低32 位，因为传参错误把uint * 理解成uint用了，实际上需要把它和紧挨着的高32 位拼在一起再解引用才是libvirtd 需要的值。</p>
+<p>从CSDN <a href="https://blog.csdn.net/skh2015java/article/details/79771799" target="_blank" rel="noopener">Golang切片和数组底层详解</a>上，我们找到一个获取数组首地址的方法：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">200</span>)</span><br><span class="line">ptr := unsafe.Pointer(&amp;s[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+<p>所以修改libvirt-go 的代码connect.go 问题解决:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ret := C.virNodeGetFreePagesWrapper(c.ptr, C.<span class="keyword">uint</span>(<span class="built_in">len</span>(pageSizes)), (*C.<span class="keyword">uint</span>)(unsafe.Pointer(&amp;cpageSizes[<span class="number">0</span>])), C.<span class="keyword">int</span>(startCell),</span><br><span class="line">        C.<span class="keyword">uint</span>(maxCells), (*C.ulonglong)(unsafe.Pointer(&amp;ccounts[<span class="number">0</span>])), C.<span class="keyword">uint</span>(flags), &amp;err)</span><br></pre></td></tr></table></figure>
+
+<p>因为刚开始学golang，感觉这个改法可能不是很科学，感觉哪里有点毛病，回头还得再测测。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">libvirt</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">libvirt-go</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/01/07/%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-源码" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -503,6 +606,18 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Linux</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">golang</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">libvirt</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">libvirt-go</a>
               </li>
             
             <div class="clearfix"></div>
