@@ -16,7 +16,7 @@
 <meta property="og:description" content="golang 解析XMlencoding&#x2F;xml.Marshal">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-01-09T13:45:24.000Z">
-<meta property="article:modified_time" content="2020-01-09T13:53:13.742Z">
+<meta property="article:modified_time" content="2020-01-09T13:54:57.473Z">
 <meta property="article:author" content="Lichen Liu">
 <meta property="article:tag" content="golang">
 <meta property="article:tag" content="xml">
@@ -188,7 +188,7 @@
 <p>经查询，文档里确实没有明确指明如果元素是个结构体，即便是空的也不会被忽略，但文档里有说如果是个指针，空的就可以忽略了：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Result <span class="keyword">struct</span> &#123;</span><br><span class="line">	XMLName xml.Name <span class="string">`xml:"Person"`</span></span><br><span class="line">	Name    <span class="keyword">string</span>   <span class="string">`xml:",omitempty"`</span></span><br><span class="line">	Test    *Email    <span class="string">`xml:",omitempty"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> &lt;Person&gt;</span><br><span class="line">     &lt;Name&gt;myname&lt;&#x2F;Name&gt;</span><br><span class="line"> &lt;&#x2F;Person&gt;</span><br><span class="line">&gt;XMLName: xml.Name&#123;Space:&quot;&quot;, Local:&quot;&quot;&#125;</span><br><span class="line">&gt;Name: &quot;myname&quot;</span><br><span class="line">&gt;Test: %!q(*main.Email&#x3D;&lt;nil&gt;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> &lt;Person&gt;</span><br><span class="line">     &lt;Name&gt;myname&lt;&#x2F;Name&gt;</span><br><span class="line"> &lt;&#x2F;Person&gt;</span><br><span class="line">XMLName: xml.Name&#123;Space:&quot;&quot;, Local:&quot;&quot;&#125;</span><br><span class="line">Name: &quot;myname&quot;</span><br><span class="line">Test: %!q(*main.Email&#x3D;&lt;nil&gt;)</span><br></pre></td></tr></table></figure>
 </blockquote>
 
       
