@@ -165,7 +165,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="golang-解析XMl"><a href="#golang-解析XMl" class="headerlink" title="golang 解析XMl"></a>golang 解析XMl</h3><p><a href="https://golang.org/pkg/encoding/xml/#Marshal" target="_blank" rel="noopener">encoding/xml.Marshal</a></p>
+        <p>golang 解析XMl <a href="https://golang.org/pkg/encoding/xml/#Marshal" target="_blank" rel="noopener">encoding/xml.Marshal</a></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"encoding/xml"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">type</span> Address <span class="keyword">struct</span> &#123;</span><br><span class="line">		City, State <span class="keyword">string</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">		XMLName   xml.Name <span class="string">`xml:"person"`</span></span><br><span class="line">		Id        <span class="keyword">int</span>      <span class="string">`xml:"id,attr"`</span></span><br><span class="line">		FirstName <span class="keyword">string</span>   <span class="string">`xml:"name&gt;first"`</span></span><br><span class="line">		LastName  <span class="keyword">string</span>   <span class="string">`xml:"name&gt;last"`</span></span><br><span class="line">		Age       <span class="keyword">int</span>      <span class="string">`xml:"age"`</span></span><br><span class="line">		Height    <span class="keyword">float32</span>  <span class="string">`xml:"height,omitempty"`</span></span><br><span class="line">		Married   <span class="keyword">bool</span></span><br><span class="line">		Address</span><br><span class="line">		Comment <span class="keyword">string</span> <span class="string">`xml:",comment"`</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	v := &amp;Person&#123;Id: <span class="number">13</span>, FirstName: <span class="string">"John"</span>, LastName: <span class="string">"Doe"</span>, Age: <span class="number">42</span>&#125;</span><br><span class="line">	v.Comment = <span class="string">" Need more details. "</span></span><br><span class="line">	v.Address = Address&#123;<span class="string">"Hanga Roa"</span>, <span class="string">"Easter Island"</span>&#125;</span><br><span class="line"></span><br><span class="line">	output, err := xml.MarshalIndent(v, <span class="string">"  "</span>, <span class="string">"    "</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"error: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	os.Stdout.Write(output)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         
           <a class="article-more-a" href="/2020/01/09/Golang-xml-omitempty/#more">more >></a>
         
@@ -197,10 +198,6 @@
 
       
 
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/01/09/Golang-xml-omitempty/">展开全文 >></a>
-        </p>
       
 
       
@@ -281,10 +278,6 @@
 
       
 
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/01/07/libvirt-go-GetFreepages/">展开全文 >></a>
-        </p>
       
 
       
@@ -370,10 +363,6 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/12/23/awssourcecode/">展开全文 >></a>
-        </p>
-      
 
       
       <div class="clearfix"></div>
@@ -449,10 +438,6 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/12/23/test/">展开全文 >></a>
-        </p>
-      
 
       
       <div class="clearfix"></div>
@@ -525,10 +510,6 @@
 
       
 
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/12/19/Hello-world/">展开全文 >></a>
-        </p>
       
 
       
