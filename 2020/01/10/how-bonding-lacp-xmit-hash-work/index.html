@@ -6,17 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://llcblog.com">
-  <title>Archives: 2019 | LLC&#39;s Blog</title>
+  <title>Linux 网络bond mode 4 的xmit_hash_policy layer3+4 到底是如何hash 的 | LLC&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="与其感慨路难行，不如马上出发">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LLC&#39;s Blog">
-<meta property="og:url" content="https:&#x2F;&#x2F;llcblog.com&#x2F;archives&#x2F;2019&#x2F;index.html">
+  <meta name="description" content="在通过iperf3 测试4 块网卡做的lacp 链路聚合时，xmit_hash_policy 选择的是layer3+4. 当iperf3 指定的线程数比较少时，总是打不满带宽。例如在源目的IP和目的端口不变的情况下，四个线程使用连续的4个源端口10001~10004 (iperf3 参数 -P 4-B src_ip –cport 10001)测试tcp 只能打出3 个网卡的效果，从&#x2F;proc&#x2F;ne">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 网络bond mode 4 的xmit_hash_policy layer3+4 到底是如何hash 的">
+<meta property="og:url" content="https:&#x2F;&#x2F;llcblog.com&#x2F;2020&#x2F;01&#x2F;10&#x2F;how-bonding-lacp-xmit-hash-work&#x2F;index.html">
 <meta property="og:site_name" content="LLC&#39;s Blog">
-<meta property="og:description" content="与其感慨路难行，不如马上出发">
+<meta property="og:description" content="在通过iperf3 测试4 块网卡做的lacp 链路聚合时，xmit_hash_policy 选择的是layer3+4. 当iperf3 指定的线程数比较少时，总是打不满带宽。例如在源目的IP和目的端口不变的情况下，四个线程使用连续的4个源端口10001~10004 (iperf3 参数 -P 4-B src_ip –cport 10001)测试tcp 只能打出3 个网卡的效果，从&#x2F;proc&#x2F;ne">
 <meta property="og:locale" content="zh">
+<meta property="article:published_time" content="2020-01-10T13:08:08.000Z">
+<meta property="article:modified_time" content="2020-01-10T13:48:52.312Z">
 <meta property="article:author" content="Lichen Liu">
 <meta property="article:tag" content="Linux">
+<meta property="article:tag" content="bonding">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="LLC&#39;s Blog" type="application/atom+xml">
@@ -143,152 +146,221 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-how-bonding-lacp-xmit-hash-work" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/12/23/awssourcecode/" class="archive-article-date">
-  	<time datetime="2019-12-23T10:59:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-23</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/12/23/awssourcecode/">在AWS 的Amazon Linux 上下载源码</a>
+    <h1 class="article-title" itemprop="name">
+      Linux 网络bond mode 4 的xmit_hash_policy layer3+4 到底是如何hash 的
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/01/10/how-bonding-lacp-xmit-hash-work/" class="archive-article-date">
+  	<time datetime="2020-01-10T13:08:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在通过iperf3 测试4 块网卡做的lacp 链路聚合时，xmit_hash_policy 选择的是layer3+4. 当iperf3 指定的线程数比较少时，总是打不满带宽。<br>例如在源目的IP和目的端口不变的情况下，四个线程使用连续的4个源端口10001~10004 (iperf3 参数 -P 4-B src_ip –cport 10001)测试tcp 只能打出3 个网卡的效果，从/proc/net/dev 中查看计数，以及从tcpdump 的抓包中，发现只有1,2,3 三块网卡有出流量。<br>其中10001 用网卡1,10002 和10003 用网卡2,10004 用网卡3，网卡四没有发包。<br>后续测试其他连续端口，也发现类似的情况，甚至有时候只能打出两张卡的效果。</p>
+<p>于是去查询了<a href="https://www.kernel.org/doc/Documentation/networking/bonding.txt" target="_blank" rel="noopener">kernel bonding 文档</a> 得知其hash 方式如下：</p>
+<a id="more"></a>
+<blockquote>
+<pre><code>layer3+4
+
+   This policy uses upper layer protocol information,
+   when available, to generate the hash.  This allows for
+   traffic to a particular network peer to span multiple
+   slaves, although a single connection will not span
+   multiple slaves.
+
+   The formula for unfragmented TCP and UDP packets is
+
+   hash = source port, destination port (as in the header)
+   hash = hash XOR source IP XOR destination IP
+   hash = hash XOR (hash RSHIFT 16)
+   hash = hash XOR (hash RSHIFT 8)
+   And then hash is reduced modulo slave count.
+
+   If the protocol is IPv6 then the source and destination
+   addresses are first hashed using ipv6_addr_hash.
+
+   For fragmented TCP or UDP packets and all other IPv4 and
+   IPv6 protocol traffic, the source and destination port
+   information is omitted.  For non-IP traffic, the
+   formula is the same as for the layer2 transmit hash
+   policy.
+
+   This algorithm is not fully 802.3ad compliant.  A
+   single TCP or UDP conversation containing both
+   fragmented and unfragmented packets will see packets
+   striped across two interfaces.  This may result in out
+   of order delivery.  Most traffic types will not meet
+   this criteria, as TCP rarely fragments traffic, and
+   most UDP traffic is not involved in extended
+   conversations.  Other implementations of 802.3ad may
+   or may not tolerate this noncompliance.</code></pre></blockquote>
+<p>但按照这个算法算下来的话，10001-10004 四个端口是可以分到四块网卡的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">xmit_hash</span><span class="params">(slaves, sport, dport, sip, dip)</span>:</span></span><br><span class="line">    hash = (sport &lt;&lt; <span class="number">16</span>) + dport</span><br><span class="line">    hash = hash ^ sip ^ dip</span><br><span class="line">    hash = hash ^ (hash &gt;&gt; <span class="number">16</span>)</span><br><span class="line">    hash = hash ^ (hash &gt;&gt; <span class="number">8</span>)</span><br><span class="line">    <span class="keyword">return</span> (hash % slaves)</span><br></pre></td></tr></table></figure>
+
+<p>搞不定，就去翻了下源码<a href="https://github.com/torvalds/linux/blob/master/drivers/net/bonding/bond_main.c#L3376" target="_blank" rel="noopener">drivers/net/bonding/bond_main.c</a>，结果发现这玩意居然和文档里写的不一样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hash ^= (__force u32)flow_get_u32_dst(&amp;flow) ^</span><br><span class="line">	(__force u32)flow_get_u32_src(&amp;flow);</span><br><span class="line">hash ^= (hash &gt;&gt; <span class="number">16</span>);</span><br><span class="line">hash ^= (hash &gt;&gt; <span class="number">8</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> hash &gt;&gt; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>翻译成python 大概是:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">xmit_hash</span><span class="params">(slaves, sport, dport, sip, dip)</span>:</span></span><br><span class="line">    hash = (sport &lt;&lt; <span class="number">16</span>) + dport</span><br><span class="line">    hash = hash ^ sip ^ dip</span><br><span class="line">    hash = hash ^ (hash &gt;&gt; <span class="number">16</span>)</span><br><span class="line">    hash = hash ^ (hash &gt;&gt; <span class="number">8</span>)</span><br><span class="line">    <span class="keyword">return</span> ((hash&gt;&gt;<span class="number">1</span>) % slaves)</span><br></pre></td></tr></table></figure>
+<p>这个hash &gt;&gt; 1 就很讲究了，这样算出来在4 网卡聚合的情况下，保持源目的地址和目的端口不变，还是上面的例子，(2n, 2n+1)的源端口号会被分配到同一块卡上，就是10001 一块卡， 10002 和10003 一块卡，10004 一块卡。用三块卡，闲置一块卡，这样的结果确实和测试吻合。</p>
+<p>那么为什么要这么搞呢？好在git log 里有答案：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># git log -p b5f862180d7011d9575d0499fa37f0f25b423b12</span></span><br><span class="line">Author: Hangbin Liu &lt;liuhangbin@gmail.com&gt;</span><br><span class="line">Date:   Mon Nov 6 09:01:57 2017 +0800</span><br><span class="line"></span><br><span class="line">    bonding: discard lowest <span class="built_in">hash</span> bit <span class="keyword">for</span> 802.3ad layer3+4</span><br><span class="line">    </span><br><span class="line">    After commit 07f4c90062f8 (<span class="string">"tcp/dccp: try to not exhaust ip_local_port_range</span></span><br><span class="line"><span class="string">    in connect()"</span>), we will try to use even ports <span class="keyword">for</span> connect(). Then <span class="keyword">if</span> an</span><br><span class="line">    application (seen clearly with iperf) opens multiple streams to the same</span><br><span class="line">    destination IP and port, each stream will be given an even <span class="built_in">source</span> port.</span><br><span class="line">    </span><br><span class="line">    So the bonding driver<span class="string">'s simple xmit_hash_policy based on layer3+4 addressing</span></span><br><span class="line"><span class="string">    will always hash all these streams to the same interface. And the total</span></span><br><span class="line"><span class="string">    throughput will limited to a single slave.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Change the tcp code will impact the whole tcp behavior, only for bonding</span></span><br><span class="line"><span class="string">    usage. Paolo Abeni suggested fix this by changing the bonding code only,</span></span><br><span class="line"><span class="string">    which should be more reasonable, and less impact.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Fix this by discarding the lowest hash bit because it contains little entropy.</span></span><br><span class="line"><span class="string">    After the fix we can re-balance between slaves.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Signed-off-by: Paolo Abeni &lt;pabeni@redhat.com&gt;</span></span><br><span class="line"><span class="string">    Signed-off-by: Hangbin Liu &lt;liuhangbin@gmail.com&gt;</span></span><br><span class="line"><span class="string">    Signed-off-by: David S. Miller &lt;davem@davemloft.net&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c</span></span><br><span class="line"><span class="string">index c99dc59d729b..76e8054bfc4e 100644</span></span><br><span class="line"><span class="string">--- a/drivers/net/bonding/bond_main.c</span></span><br><span class="line"><span class="string">+++ b/drivers/net/bonding/bond_main.c</span></span><br><span class="line"><span class="string">@@ -3253,7 +3253,7 @@ u32 bond_xmit_hash(struct bonding *bond, struct sk_buff *skb)</span></span><br><span class="line"><span class="string">        hash ^= (hash &gt;&gt; 16);</span></span><br><span class="line"><span class="string">        hash ^= (hash &gt;&gt; 8);</span></span><br><span class="line"><span class="string"> </span></span><br><span class="line"><span class="string">-       return hash;</span></span><br><span class="line"><span class="string">+       return hash &gt;&gt; 1;</span></span><br><span class="line"><span class="string"> &#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>看名字这位仁兄好像还是个中国人，大意是在2015 的另一个提交07f4c90062f8 改变了一些随机端口号的使用规则，现在使用iperf3 等工具时，随机的源端口号是每次+2，而不是每次+1，这样如果还是原来的xmit_hash_policy 会有一些问题，例如4 网卡的话永远都只能hash 到两个卡。所以他舍弃了hash 的最后一位来应对这个变化。<br>这个commit 是在2017 年提交，在CentOS/RHEL 7.3 的3.10.0-514 内核中还没有被添加进去。</p>
+<p>对于随机端口号每次+2 这个现象，之前用python 做测试的时候也遇见过不过没有深究，现在也找到了答案，算是缘分吧。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">AWS</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Kernel</a>
-        		</li>
-      		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Linux</a>
         		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/12/23/test/" class="archive-article-date">
-  	<time datetime="2019-12-23T08:32:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-23</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/12/23/test/">中文测试</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">test</a>
-        		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">输入法</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">bonding</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://llcblog.com/2020/01/10/how-bonding-lacp-xmit-hash-work/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/12/19/Hello-world/" class="archive-article-date">
-  	<time datetime="2019-12-18T21:48:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-19</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2020/01/09/Golang-xml-omitempty/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">golang xml 如何忽略空结构体</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/12/19/Hello-world/">Hello world</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">test</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">art</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  <div id="gitalk-container" style="padding: 0px 30px 0px 30px;"></div> 
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+
+if(true){
+	var gitalk = new Gitalk({
+  	clientID: '1fcd05a65f665fc0acf7',
+  	clientSecret: '4e9a082c058cfa20e9c8419eea24829d7355296c',
+  	repo: 'comments',
+  	owner: 'Barathrum-Liu',
+  	admin: ['Barathrum-Liu'],
+  	id: 'Fri Jan 10 2020 21:08:08 GMT+0800',
+})
+gitalk.render('gitalk-container') 
+}
+</script>
+
+  
+
+  
 
 
           </div>
@@ -311,8 +383,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

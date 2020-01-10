@@ -145,6 +145,83 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-how-bonding-lacp-xmit-hash-work" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/10/how-bonding-lacp-xmit-hash-work/">Linux 网络bond mode 4 的xmit_hash_policy layer3+4 到底是如何hash 的</a>
+    </h1>
+  
+
+        
+        <a href="/2020/01/10/how-bonding-lacp-xmit-hash-work/" class="archive-article-date">
+  	<time datetime="2020-01-10T13:08:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在通过iperf3 测试4 块网卡做的lacp 链路聚合时，xmit_hash_policy 选择的是layer3+4. 当iperf3 指定的线程数比较少时，总是打不满带宽。<br>例如在源目的IP和目的端口不变的情况下，四个线程使用连续的4个源端口10001~10004 (iperf3 参数 -P 4-B src_ip –cport 10001)测试tcp 只能打出3 个网卡的效果，从/proc/net/dev 中查看计数，以及从tcpdump 的抓包中，发现只有1,2,3 三块网卡有出流量。<br>其中10001 用网卡1,10002 和10003 用网卡2,10004 用网卡3，网卡四没有发包。<br>后续测试其他连续端口，也发现类似的情况，甚至有时候只能打出两张卡的效果。</p>
+<p>于是去查询了<a href="https://www.kernel.org/doc/Documentation/networking/bonding.txt" target="_blank" rel="noopener">kernel bonding 文档</a> 得知其hash 方式如下：</p>
+        
+          <a class="article-more-a" href="/2020/01/10/how-bonding-lacp-xmit-hash-work/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Linux</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">bonding</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Golang-xml-omitempty" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -672,6 +749,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">omitempty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">bonding</a>
               </li>
             
             <div class="clearfix"></div>
