@@ -6,17 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://llcblog.com">
-  <title>Tag: AWS | LLC&#39;s Blog</title>
+  <title>一次ping 遇到Invalid argument 报错的问题 | LLC&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="与其感慨路难行，不如马上出发">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LLC&#39;s Blog">
-<meta property="og:url" content="https:&#x2F;&#x2F;llcblog.com&#x2F;tags&#x2F;AWS&#x2F;index.html">
+  <meta name="description" content="一台线上的虚拟机，ping localhost 时出现了sendmsg: Invalid argument的错误，偶尔会正常，同时ping 同网段的机器都有问题，但ping 跨网段的机器没有问题。但使用的ping 命令并没有附加什么参数。查看strace 的结果，发现是在sendto 的系统调用中返回的EINVAL 错误，检查man 2 sendto，也只是说Invalid argument pa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次ping 遇到Invalid argument 报错的问题">
+<meta property="og:url" content="https:&#x2F;&#x2F;llcblog.com&#x2F;2020&#x2F;02&#x2F;11&#x2F;ping-invalid-argument&#x2F;index.html">
 <meta property="og:site_name" content="LLC&#39;s Blog">
-<meta property="og:description" content="与其感慨路难行，不如马上出发">
+<meta property="og:description" content="一台线上的虚拟机，ping localhost 时出现了sendmsg: Invalid argument的错误，偶尔会正常，同时ping 同网段的机器都有问题，但ping 跨网段的机器没有问题。但使用的ping 命令并没有附加什么参数。查看strace 的结果，发现是在sendto 的系统调用中返回的EINVAL 错误，检查man 2 sendto，也只是说Invalid argument pa">
 <meta property="og:locale" content="zh">
+<meta property="article:published_time" content="2020-02-11T11:16:08.000Z">
+<meta property="article:modified_time" content="2020-02-11T11:32:14.504Z">
 <meta property="article:author" content="Lichen Liu">
-<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="ping">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="arp">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="LLC&#39;s Blog" type="application/atom+xml">
@@ -143,68 +147,178 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-ping-invalid-argument" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/12/23/awssourcecode/" class="archive-article-date">
-  	<time datetime="2019-12-23T10:59:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-23</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/12/23/awssourcecode/">在AWS 的Amazon Linux 上下载源码</a>
+    <h1 class="article-title" itemprop="name">
+      一次ping 遇到Invalid argument 报错的问题
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/02/11/ping-invalid-argument/" class="archive-article-date">
+  	<time datetime="2020-02-11T11:16:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一台线上的虚拟机，ping localhost 时出现了<code>sendmsg: Invalid argument</code>的错误，偶尔会正常，同时ping 同网段的机器都有问题，但ping 跨网段的机器没有问题。但使用的ping 命令并没有附加什么参数。<br>查看strace 的结果，发现是在sendto 的系统调用中返回的EINVAL 错误，检查<code>man 2 sendto</code>，也只是说<code>Invalid argument passed</code>，但对比正常机器，strace 中输出的函数调用传参并无问题。</p>
+<a id="more"></a>
+<p>尝试了加路由，ifdown/ifup 等操作后，都没什么进展，之后做了些搜索，有人遇到过相同的问题，但没有回答。<br>考虑到ping 同网段也有相同问题，可能不是lo 网卡故障，是否跨网段涉及到arp 问题，马上用ip neigh 命令进行检查，发现只有网关的一条arp cache. 马上尝试手动添加arp cache，却出现了buffer 不足无法添加的报错，问题呼之欲出。<br>考虑到这台机器用作运行docker，通过ip netns list 查看到有多个network 的namespace（有名字的），通过ip netns exec &lt;name&gt; ip neigh 发现q已经有较多的arp cache，而这个docker 正好是用桥的方式使用网络，且是一个/22 的网段，多个netns 中大量的arp cache 占满了buffer，导致ping 同网段时没办法缓存新的ip-mac 映射。之后修改了net.ipv4.neigh.default.gc_thresh3 问题得到解决。</p>
+<p>不过通过ip neigh 来看ping lo 没有产生127,0.0.1 的arp cache，但是ping 也失败了，不知道为啥=。=</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Linux</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">ping</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">AWS</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">linux</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Kernel</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">arp</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://llcblog.com/2020/02/11/ping-invalid-argument/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2020/01/10/how-bonding-lacp-xmit-hash-work/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux 网络bond mode 4 的xmit_hash_policy layer3+4 到底是如何hash 的</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  <div id="gitalk-container" style="padding: 0px 30px 0px 30px;"></div> 
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+
+if(true){
+	var gitalk = new Gitalk({
+  	clientID: '1fcd05a65f665fc0acf7',
+  	clientSecret: '4e9a082c058cfa20e9c8419eea24829d7355296c',
+  	repo: 'comments',
+  	owner: 'Barathrum-Liu',
+  	admin: ['Barathrum-Liu'],
+  	id: 'Tue Feb 11 2020 19:16:08 GMT+0800',
+})
+gitalk.render('gitalk-container') 
+}
+</script>
+
+  
+
+  
 
 
           </div>
@@ -227,9 +341,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
