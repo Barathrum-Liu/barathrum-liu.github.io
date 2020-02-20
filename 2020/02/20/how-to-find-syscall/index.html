@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://llcblog.com">
-  <title>延迟满足</title>
+  <title>在linux kernel 源码中搜索syscall 的实现 | 延迟满足</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="与其感慨路难行，不如马上出发">
-<meta property="og:type" content="website">
-<meta property="og:title" content="延迟满足">
-<meta property="og:url" content="https:&#x2F;&#x2F;llcblog.com&#x2F;index.html">
+  <meta name="description" content="个人习惯用grep 搜索： 123$ grep &#39;SYSCALL_DEFINE.*&lt;syscallname&gt;&#39; **&#x2F;*.[ch]# 例如$ grep &#39;SYSCALL_DEFINE.*mmap&#39; **&#x2F;*.[ch]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在linux kernel 源码中搜索syscall 的实现">
+<meta property="og:url" content="https:&#x2F;&#x2F;llcblog.com&#x2F;2020&#x2F;02&#x2F;20&#x2F;how-to-find-syscall&#x2F;index.html">
 <meta property="og:site_name" content="延迟满足">
-<meta property="og:description" content="与其感慨路难行，不如马上出发">
+<meta property="og:description" content="个人习惯用grep 搜索： 123$ grep &#39;SYSCALL_DEFINE.*&lt;syscallname&gt;&#39; **&#x2F;*.[ch]# 例如$ grep &#39;SYSCALL_DEFINE.*mmap&#39; **&#x2F;*.[ch]">
 <meta property="og:locale" content="zh">
+<meta property="article:published_time" content="2020-02-20T08:28:59.000Z">
+<meta property="article:modified_time" content="2020-02-20T08:33:26.810Z">
 <meta property="article:author" content="Lichen Liu">
 <meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
@@ -143,16 +145,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-how-to-find-syscall" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-how-to-find-syscall" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/20/how-to-find-syscall/">在linux kernel 源码中搜索syscall 的实现</a>
+    <h1 class="article-title" itemprop="name">
+      在linux kernel 源码中搜索syscall 的实现
     </h1>
   
 
@@ -190,10 +190,73 @@
       
 
       
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://llcblog.com/2020/02/20/how-to-find-syscall/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2020/02/11/ping-invalid-argument/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">一次ping 遇到Invalid argument 报错的问题</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -213,558 +276,35 @@
 
 
 
-
   
-    <article id="post-ping-invalid-argument" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/11/ping-invalid-argument/">一次ping 遇到Invalid argument 报错的问题</a>
-    </h1>
   
 
-        
-        <a href="/2020/02/11/ping-invalid-argument/" class="archive-article-date">
-  	<time datetime="2020-02-11T11:16:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>一台线上的虚拟机，ping localhost 时出现了<code>sendmsg: Invalid argument</code>的错误，偶尔会正常，同时ping 同网段的机器都有问题，但ping 跨网段的机器没有问题。但使用的ping 命令并没有附加什么参数。<br>查看strace 的结果，发现是在sendto 的系统调用中返回的EINVAL 错误，检查<code>man 2 sendto</code>，也只是说<code>Invalid argument passed</code>，但对比正常机器，strace 中输出的函数调用传参并无问题。</p>
-        
-          <a class="article-more-a" href="/2020/02/11/ping-invalid-argument/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Linux</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">ping</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">arp</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-how-bonding-lacp-xmit-hash-work" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/01/10/how-bonding-lacp-xmit-hash-work/">Linux 网络bond mode 4 的xmit_hash_policy layer3+4 到底是如何hash 的</a>
-    </h1>
   
 
-        
-        <a href="/2020/01/10/how-bonding-lacp-xmit-hash-work/" class="archive-article-date">
-  	<time datetime="2020-01-10T13:08:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-10</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在通过iperf3 测试4 块网卡做的lacp 链路聚合时，xmit_hash_policy 选择的是layer3+4. 当iperf3 指定的线程数比较少时，总是打不满带宽。<br>例如在源目的IP和目的端口不变的情况下，四个线程使用连续的4个源端口10001~10004 (iperf3 参数 -P 4-B src_ip –cport 10001)测试tcp 只能打出3 个网卡的效果，从/proc/net/dev 中查看计数，以及从tcpdump 的抓包中，发现只有1,2,3 三块网卡有出流量。<br>其中10001 用网卡1,10002 和10003 用网卡2,10004 用网卡3，网卡四没有发包。<br>后续测试其他连续端口，也发现类似的情况，甚至有时候只能打出两张卡的效果。</p>
-<p>于是去查询了<a href="https://www.kernel.org/doc/Documentation/networking/bonding.txt" target="_blank" rel="noopener">kernel bonding 文档</a> 得知其hash 方式如下：</p>
-        
-          <a class="article-more-a" href="/2020/01/10/how-bonding-lacp-xmit-hash-work/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Linux</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">bonding</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Golang-xml-omitempty" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/01/09/Golang-xml-omitempty/">golang xml 如何忽略空结构体</a>
-    </h1>
   
 
-        
-        <a href="/2020/01/09/Golang-xml-omitempty/" class="archive-article-date">
-  	<time datetime="2020-01-09T13:45:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>golang 解析XMl <a href="https://golang.org/pkg/encoding/xml/#Marshal" target="_blank" rel="noopener">encoding/xml.Marshal</a></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"encoding/xml"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">type</span> Address <span class="keyword">struct</span> &#123;</span><br><span class="line">		City, State <span class="keyword">string</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">		XMLName   xml.Name <span class="string">`xml:"person"`</span></span><br><span class="line">		Id        <span class="keyword">int</span>      <span class="string">`xml:"id,attr"`</span></span><br><span class="line">		FirstName <span class="keyword">string</span>   <span class="string">`xml:"name&gt;first"`</span></span><br><span class="line">		LastName  <span class="keyword">string</span>   <span class="string">`xml:"name&gt;last"`</span></span><br><span class="line">		Age       <span class="keyword">int</span>      <span class="string">`xml:"age"`</span></span><br><span class="line">		Height    <span class="keyword">float32</span>  <span class="string">`xml:"height,omitempty"`</span></span><br><span class="line">		Married   <span class="keyword">bool</span></span><br><span class="line">		Address</span><br><span class="line">		Comment <span class="keyword">string</span> <span class="string">`xml:",comment"`</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	v := &amp;Person&#123;Id: <span class="number">13</span>, FirstName: <span class="string">"John"</span>, LastName: <span class="string">"Doe"</span>, Age: <span class="number">42</span>&#125;</span><br><span class="line">	v.Comment = <span class="string">" Need more details. "</span></span><br><span class="line">	v.Address = Address&#123;<span class="string">"Hanga Roa"</span>, <span class="string">"Easter Island"</span>&#125;</span><br><span class="line"></span><br><span class="line">	output, err := xml.MarshalIndent(v, <span class="string">"  "</span>, <span class="string">"    "</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"error: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	os.Stdout.Write(output)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2020/01/09/Golang-xml-omitempty/#more">more >></a>
-        
-      
+  <div id="gitalk-container" style="padding: 0px 30px 0px 30px;"></div> 
 
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">xml</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">omitempty</a>
-        		</li>
-      		
-		</ul>
-	</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
 
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
+if(true){
+	var gitalk = new Gitalk({
+  	clientID: '1fcd05a65f665fc0acf7',
+  	clientSecret: '4e9a082c058cfa20e9c8419eea24829d7355296c',
+  	repo: 'comments',
+  	owner: 'Barathrum-Liu',
+  	admin: ['Barathrum-Liu'],
+  	id: 'Thu Feb 20 2020 16:28:59 GMT+0800',
+})
+gitalk.render('gitalk-container') 
+}
+</script>
 
   
-    <article id="post-libvirt-go-GetFreepages" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/01/07/libvirt-go-GetFreepages/">libvirt-go 的一个坑</a>
-    </h1>
-  
 
-        
-        <a href="/2020/01/07/libvirt-go-GetFreepages/" class="archive-article-date">
-  	<time datetime="2020-01-07T14:54:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天和聂工在研究怎么用<a href="https://github.com/libvirt/libvirt-go" target="_blank" rel="noopener">libvirt-go</a> 时，发现GetFreepages 有bug，demo 一跑就报错<br><code>virError(Code=9, Domain=0, Message=&#39;operation failed: page size 679968 is not available on node 0&#39;)</code>.<br>其中这个<code>page size 679968</code>每次跑还会变化。</p>
-        
-          <a class="article-more-a" href="/2020/01/07/libvirt-go-GetFreepages/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">libvirt</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">libvirt-go</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-awssourcecode" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/12/23/awssourcecode/">在AWS 的Amazon Linux 上下载源码</a>
-    </h1>
-  
-
-        
-        <a href="/2019/12/23/awssourcecode/" class="archive-article-date">
-  	<time datetime="2019-12-23T10:59:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Amazon Linux 和Amazon Linux 2 的repo 里，虽然有例如amzn2-core-source/2 这样的repo，但是里面根本没有软件包：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">~ % uname -r     </span><br><span class="line">4.14.133-113.105.amzn2.x86_64</span><br><span class="line">~ % yum repolist</span><br><span class="line">Loaded plugins: auto-update-debuginfo, dkms-build-requires, extras_suggestions, langpacks,</span><br><span class="line">              : update-motd</span><br><span class="line">repo id                                repo name                                        status</span><br><span class="line">amzn2-core&#x2F;2&#x2F;x86_64                    Amazon Linux 2 core repository                   17,984</span><br><span class="line">amzn2-core-debuginfo&#x2F;2&#x2F;x86_64          Amazon Linux 2 core repository - debuginfo packa  3,513</span><br><span class="line">amzn2-core-source&#x2F;2                    Amazon Linux 2 core repository - source packages      0</span><br><span class="line">amzn2extra-BCC&#x2F;2&#x2F;x86_64                Amazon Extras repo for BCC                            9</span><br><span class="line">amzn2extra-BCC-debuginfo&#x2F;2&#x2F;x86_64      Amazon Extras debuginfo repo for BCC                  2</span><br><span class="line">amzn2extra-redis4.0&#x2F;2&#x2F;x86_64           Amazon Extras repo for redis4.0                      14</span><br><span class="line">amzn2extra-redis4.0-debuginfo&#x2F;2&#x2F;x86_64 Amazon Extras debuginfo repo for redis4.0             3</span><br><span class="line">amzn2extra-vim&#x2F;2&#x2F;x86_64                Amazon Extras repo for vim                           10</span><br><span class="line">amzn2extra-vim-debuginfo&#x2F;2&#x2F;x86_64      Amazon Extras debuginfo repo for vim                  2</span><br><span class="line">danstiner_softu2f&#x2F;x86_64               danstiner_softu2f                                     0</span><br><span class="line">danstiner_softu2f-source               danstiner_softu2f-source                              0</span><br><span class="line">repolist: 21,537</span><br></pre></td></tr></table></figure>
-
-<p>其实源代码还是在的，只是要用yumdownloader 来下载:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ % yumdownloader --source kernel</span><br></pre></td></tr></table></figure>
-
-<p>这个在<a href="https://aws.amazon.com/amazon-linux-ami/faqs/#source" target="_blank" rel="noopener">AWS 的FAQ</a>里已经说了，但很多人（包括我）一开始找不到。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Linux</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">AWS</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Kernel</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-test" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/12/23/test/">中文测试</a>
-    </h1>
-  
-
-        
-        <a href="/2019/12/23/test/" class="archive-article-date">
-  	<time datetime="2019-12-23T08:32:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="This-is-a-test-post"><a href="#This-is-a-test-post" class="headerlink" title="This is a test post."></a>This is a test post.</h3><p>中文测试内容。</p>
-<p>刚刚安装manjaro linux，vscode 不能切换输入法。<br>参考<a href="https://forum.manjaro.org/t/kde/104454/2" target="_blank" rel="noopener">Manjaro 论坛</a>，创建了.pam_environment 没有效果。<br>随后重新安装了fcitx 和fcitx-im，重启系统就能用了。具体哪个生效的也不知道，不折腾了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">test</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">输入法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/12/19/Hello-world/">Hello world</a>
-    </h1>
-  
-
-        
-        <a href="/2019/12/19/Hello-world/" class="archive-article-date">
-  	<time datetime="2019-12-18T21:48:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world!"></a>Hello world!</h1>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">test</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">art</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
 
 
@@ -787,8 +327,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

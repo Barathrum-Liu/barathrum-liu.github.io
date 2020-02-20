@@ -16,7 +16,7 @@
 <meta property="og:description" content="一台线上的虚拟机，ping localhost 时出现了sendmsg: Invalid argument的错误，偶尔会正常，同时ping 同网段的机器都有问题，但ping 跨网段的机器没有问题。但使用的ping 命令并没有附加什么参数。查看strace 的结果，发现是在sendto 的系统调用中返回的EINVAL 错误，检查man 2 sendto，也只是说Invalid argument pa">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-02-11T11:16:08.000Z">
-<meta property="article:modified_time" content="2020-02-11T11:35:57.640Z">
+<meta property="article:modified_time" content="2020-02-20T08:34:56.930Z">
 <meta property="article:author" content="Lichen Liu">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="ping">
@@ -170,7 +170,7 @@
         <p>一台线上的虚拟机，ping localhost 时出现了<code>sendmsg: Invalid argument</code>的错误，偶尔会正常，同时ping 同网段的机器都有问题，但ping 跨网段的机器没有问题。但使用的ping 命令并没有附加什么参数。<br>查看strace 的结果，发现是在sendto 的系统调用中返回的EINVAL 错误，检查<code>man 2 sendto</code>，也只是说<code>Invalid argument passed</code>，但对比正常机器，strace 中输出的函数调用传参并无问题。</p>
 <a id="more"></a>
 <p>尝试了加路由，ifdown/ifup 等操作后，都没什么进展，之后做了些搜索，有人遇到过相同的问题，但没有回答。<br>考虑到ping 同网段也有相同问题，可能不是lo 网卡故障，是否跨网段涉及到arp 问题，马上用ip neigh 命令进行检查，发现只有网关的一条arp cache. 马上尝试手动添加arp cache，却出现了buffer 不足无法添加的报错，问题呼之欲出。<br>考虑到这台机器用作运行docker，通过ip netns list 查看到有多个network 的namespace（有名字的），通过ip netns exec &lt;name&gt; ip neigh 发现q已经有较多的arp cache，而这个docker 正好是用桥的方式使用网络，且是一个/22 的网段，多个netns 中大量的arp cache 占满了buffer，导致ping 同网段时没办法缓存新的ip-mac 映射。之后修改了net.ipv4.neigh.default.gc_thresh3 问题得到解决。</p>
-<p>不过通过ip neigh 来看ping lo 没有产生127,0.0.1 的arp cache，但是ping 也失败了，不知道为啥=。=</p>
+<p>不过通过ip neigh 来看ping lo 没有产生127.0.0.1 的arp cache，似乎不需要，但是ping 也失败了，不知道为啥=。=</p>
 
       
 
@@ -261,6 +261,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2020/02/20/how-to-find-syscall/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          在linux kernel 源码中搜索syscall 的实现
+        
+      </div>
+    </a>
   
   
     <a href="/2020/01/10/how-bonding-lacp-xmit-hash-work/" id="article-nav-older" class="article-nav-link-wrap">
