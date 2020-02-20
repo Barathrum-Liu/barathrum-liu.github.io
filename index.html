@@ -145,6 +145,83 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-numa-memory-policy" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/20/numa-memory-policy/">NUMA 内存策略 preferred 的效果</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/20/numa-memory-policy/" class="archive-article-date">
+  	<time datetime="2020-02-20T08:36:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>和聂工一起在如何在硬件资源有限的情况下尽量多的运行虚拟机的泥潭中苦苦挣扎。</p>
+<p>想利用numa 的优势，但又因为内存资源总是不够，使用strict 的策略可能会导致oom，只好允许进程跨numa node 使用内存。<br>当在一台启用了numa 的物理机上，通过libvirt 的xml 给虚拟机添加内存策略preferred 后，期待的是它会先使用preferred 的node 上的内存，只有这个node 上的内存不足时，才考虑使用其他node.<br>但实际部署下来，经常发现很多进程在两个node 上都有内存，但通过numastat -m 来看其实preferred 的node 上往往还有不少可释放的buffer/cache 等。</p>
+        
+          <a class="article-more-a" href="/2020/02/20/numa-memory-policy/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Linux</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">numa</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-how-to-find-syscall" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -911,6 +988,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">omitempty</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">numa</a>
               </li>
             
             <div class="clearfix"></div>
