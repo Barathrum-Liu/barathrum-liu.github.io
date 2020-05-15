@@ -6,21 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://llcblog.com">
-  <title>golang xml 如何忽略空结构体 | 延迟满足</title>
+  <title>Archives: 2020/5 | 延迟满足</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="golang 解析XMl encoding&#x2F;xml.Marshal 1234567891011121314151617181920212223242526272829303132333435package mainimport (	&quot;encoding&#x2F;xml&quot;	&quot;fmt&quot;	&quot;os&quot;)func main() &amp;#123;	type Address struct &amp;#123;		City, State">
-<meta property="og:type" content="article">
-<meta property="og:title" content="golang xml 如何忽略空结构体">
-<meta property="og:url" content="https:&#x2F;&#x2F;llcblog.com&#x2F;2020&#x2F;01&#x2F;09&#x2F;Golang-xml-omitempty&#x2F;index.html">
+  <meta name="description" content="与其感慨路难行，不如马上出发">
+<meta property="og:type" content="website">
+<meta property="og:title" content="延迟满足">
+<meta property="og:url" content="https:&#x2F;&#x2F;llcblog.com&#x2F;archives&#x2F;2020&#x2F;05&#x2F;index.html">
 <meta property="og:site_name" content="延迟满足">
-<meta property="og:description" content="golang 解析XMl encoding&#x2F;xml.Marshal 1234567891011121314151617181920212223242526272829303132333435package mainimport (	&quot;encoding&#x2F;xml&quot;	&quot;fmt&quot;	&quot;os&quot;)func main() &amp;#123;	type Address struct &amp;#123;		City, State">
+<meta property="og:description" content="与其感慨路难行，不如马上出发">
 <meta property="og:locale" content="zh">
-<meta property="article:published_time" content="2020-01-09T13:45:24.000Z">
-<meta property="article:modified_time" content="2020-01-09T15:29:54.112Z">
 <meta property="article:author" content="Lichen Liu">
-<meta property="article:tag" content="golang">
-<meta property="article:tag" content="xml">
-<meta property="article:tag" content="omitempty">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="延迟满足" type="application/atom+xml">
@@ -147,204 +143,60 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Golang-xml-omitempty" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      golang xml 如何忽略空结构体
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2020" class="archive-year">2020</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2020/05/15/ovs-conntrack/" class="archive-article-date">
+  	<time datetime="2020-05-15T12:28:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-15</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2020/05/15/ovs-conntrack/">使用ct_state 实现出口放行防火墙</a>
     </h1>
   
 
-        
-        <a href="/2020/01/09/Golang-xml-omitempty/" class="archive-article-date">
-  	<time datetime="2020-01-09T13:45:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>golang 解析XMl <a href="https://golang.org/pkg/encoding/xml/#Marshal" target="_blank" rel="noopener">encoding/xml.Marshal</a></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"encoding/xml"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">type</span> Address <span class="keyword">struct</span> &#123;</span><br><span class="line">		City, State <span class="keyword">string</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">		XMLName   xml.Name <span class="string">`xml:"person"`</span></span><br><span class="line">		Id        <span class="keyword">int</span>      <span class="string">`xml:"id,attr"`</span></span><br><span class="line">		FirstName <span class="keyword">string</span>   <span class="string">`xml:"name&gt;first"`</span></span><br><span class="line">		LastName  <span class="keyword">string</span>   <span class="string">`xml:"name&gt;last"`</span></span><br><span class="line">		Age       <span class="keyword">int</span>      <span class="string">`xml:"age"`</span></span><br><span class="line">		Height    <span class="keyword">float32</span>  <span class="string">`xml:"height,omitempty"`</span></span><br><span class="line">		Married   <span class="keyword">bool</span></span><br><span class="line">		Address</span><br><span class="line">		Comment <span class="keyword">string</span> <span class="string">`xml:",comment"`</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	v := &amp;Person&#123;Id: <span class="number">13</span>, FirstName: <span class="string">"John"</span>, LastName: <span class="string">"Doe"</span>, Age: <span class="number">42</span>&#125;</span><br><span class="line">	v.Comment = <span class="string">" Need more details. "</span></span><br><span class="line">	v.Address = Address&#123;<span class="string">"Hanga Roa"</span>, <span class="string">"Easter Island"</span>&#125;</span><br><span class="line"></span><br><span class="line">	output, err := xml.MarshalIndent(v, <span class="string">"  "</span>, <span class="string">"    "</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"error: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	os.Stdout.Write(output)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<a id="more"></a>
-<p>其中<code>Height    float32  `xml:&quot;height,omitempty&quot;`</code>  这里的omitempty 用于表示如果Height 为空则不输出在XML 中，文档中解释为:</p>
-<blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- a field with a tag including the &quot;omitempty&quot; option is omitted</span><br><span class="line">  if the field value is empty. The empty values are false, 0, any</span><br><span class="line">  nil pointer or interface value, and any array, slice, map, or</span><br><span class="line">  string of length zero.</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p>使用时发现对于struct，例如:</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Email <span class="keyword">struct</span> &#123;</span><br><span class="line">	Where <span class="keyword">string</span> <span class="string">`xml:"where,attr"`</span></span><br><span class="line">	Addr  <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Result <span class="keyword">struct</span> &#123;</span><br><span class="line">	XMLName xml.Name <span class="string">`xml:"Person"`</span></span><br><span class="line">	Name    <span class="keyword">string</span>   <span class="string">`xml:",omitempty"`</span></span><br><span class="line">	Test	Email	<span class="string">`xml:",omitempty"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果Email 没有赋予初值，运行时成员Test仍然会被放到XML里，而不是丢弃：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"encoding/xml"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">type</span> Email <span class="keyword">struct</span> &#123;</span><br><span class="line">		Where <span class="keyword">string</span> <span class="string">`xml:"where,attr"`</span></span><br><span class="line">		Addr  <span class="keyword">string</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">type</span> Result <span class="keyword">struct</span> &#123;</span><br><span class="line">		XMLName xml.Name <span class="string">`xml:"Person"`</span></span><br><span class="line">		Name    <span class="keyword">string</span>   <span class="string">`xml:",omitempty"`</span></span><br><span class="line">		Test    Email    <span class="string">`xml:",omitempty"`</span></span><br><span class="line">	&#125;</span><br><span class="line">	v := Result&#123;Name: <span class="string">"myname"</span>&#125;</span><br><span class="line">	resultxml, _ := xml.MarshalIndent(v, <span class="string">"  "</span>, <span class="string">"    "</span>)</span><br><span class="line">	fmt.Println(<span class="keyword">string</span>(resultxml))</span><br><span class="line">	fmt.Printf(<span class="string">"XMLName: %#v\n"</span>, v.XMLName)</span><br><span class="line">	fmt.Printf(<span class="string">"Name: %q\n"</span>, v.Name)</span><br><span class="line">	fmt.Printf(<span class="string">"Test: %q\n"</span>, v.Test)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://play.golang.org/p/WGtM2N8Bwah" target="_blank" rel="noopener">输出结果</a>:</p>
-<blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">  &lt;Person&gt;</span><br><span class="line">      &lt;Name&gt;myname&lt;&#x2F;Name&gt;</span><br><span class="line">      &lt;Test where&#x3D;&quot;&quot;&gt;</span><br><span class="line">          &lt;Addr&gt;&lt;&#x2F;Addr&gt;</span><br><span class="line">      &lt;&#x2F;Test&gt;</span><br><span class="line">  &lt;&#x2F;Person&gt;</span><br><span class="line">XMLName: xml.Name&#123;Space:&quot;&quot;, Local:&quot;&quot;&#125;</span><br><span class="line">Name: &quot;myname&quot;</span><br><span class="line">Test: &#123;&quot;&quot; &quot;&quot;&#125;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p>经查询，文档里确实没有明确指明如果元素是个结构体，即便是空的也不会被忽略，但文档里有说如果是个指针，空的就可以忽略了：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Result <span class="keyword">struct</span> &#123;</span><br><span class="line">	XMLName xml.Name <span class="string">`xml:"Person"`</span></span><br><span class="line">	Name    <span class="keyword">string</span>   <span class="string">`xml:",omitempty"`</span></span><br><span class="line">	Test    *Email    <span class="string">`xml:",omitempty"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> &lt;Person&gt;</span><br><span class="line">     &lt;Name&gt;myname&lt;&#x2F;Name&gt;</span><br><span class="line"> &lt;&#x2F;Person&gt;</span><br><span class="line">XMLName: xml.Name&#123;Space:&quot;&quot;, Local:&quot;&quot;&#125;</span><br><span class="line">Name: &quot;myname&quot;</span><br><span class="line">Test: %!q(*main.Email&#x3D;&lt;nil&gt;)</span><br></pre></td></tr></table></figure>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">xml</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">omitempty</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">ovs</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://llcblog.com/2020/01/09/Golang-xml-omitempty/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2020/01/10/how-bonding-lacp-xmit-hash-work/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Linux 网络bond mode 4 的xmit_hash_policy layer3+4 到底是如何hash 的
-        
-      </div>
-    </a>
   
   
-    <a href="/2020/01/07/libvirt-go-GetFreepages/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">libvirt-go 的一个坑</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  <div id="gitalk-container" style="padding: 0px 30px 0px 30px;"></div> 
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-<script type="text/javascript">
-
-if(true){
-	var gitalk = new Gitalk({
-  	clientID: '1fcd05a65f665fc0acf7',
-  	clientSecret: '4e9a082c058cfa20e9c8419eea24829d7355296c',
-  	repo: 'comments',
-  	owner: 'Barathrum-Liu',
-  	admin: ['Barathrum-Liu'],
-  	id: 'Thu Jan 09 2020 21:45:24 GMT+0800',
-})
-gitalk.render('gitalk-container') 
-}
-</script>
-
-  
-
-  
+    
 
 
           </div>
@@ -367,8 +219,8 @@ gitalk.render('gitalk-container')
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
