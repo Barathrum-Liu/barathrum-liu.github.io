@@ -15,20 +15,20 @@
 <meta property="og:site_name" content="LLC&#39;s blog">
 <meta property="og:description" content="sk_buff 是Linux 网络中的重要数据结构，每个包的发送和接收都要处理这个结构体。 这个结构体比较长，只讨论部分字段。开头是一个联合，它要么在一个链表里，要么在一个rb tree（netem&#x2F;tcp)里。">
 <meta property="og:locale" content="zh">
-<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/how-sk-buff-work/skb_layout.png">
-<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/how-sk-buff-work/skb_fresh.png">
-<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/how-sk-buff-work/skb_after_reserve.png">
-<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/how-sk-buff-work/skb_after_user_put.png">
-<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/how-sk-buff-work/skb_after_udp_push.png">
-<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/how-sk-buff-work/skb_after_ip_push.png">
+<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_layout.png">
+<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_fresh.png">
+<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_after_reserve.png">
+<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_after_user_put.png">
+<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_after_udp_push.png">
+<meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_after_ip_push.png">
 <meta property="article:published_time" content="2020-10-26T03:18:06.000Z">
-<meta property="article:modified_time" content="2020-10-26T12:06:42.075Z">
+<meta property="article:modified_time" content="2020-10-26T12:08:35.265Z">
 <meta property="article:author" content="Lichen Liu">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="sk_buff">
 <meta property="article:tag" content="kernel">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/how-sk-buff-work/skb_layout.png">
+<meta name="twitter:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_layout.png">
   
     <link rel="alternative" href="/atom.xml" title="LLC&#39;s blog" type="application/atom+xml">
   
@@ -195,18 +195,18 @@
 <li>data 到tail 之间，存放包的数据。</li>
 <li>tail 到end 之间，称为tailroom.</li>
 </ul>
-<p><img src="how-sk-buff-work/skb_layout.png" alt=""></p>
+<p><img src="skb_layout.png" alt=""></p>
 <p>对于刚刚通过alloc_skb() 方法申请出来的skb，head,tail,data 三个指针都指向同一位置，而tail 和end 之间有一段根据alloc_skb(len, flag) 方法的参数申请出来的空间。</p>
-<p><img src="how-sk-buff-work/skb_fresh.png" alt=""></p>
+<p><img src="skb_fresh.png" alt=""></p>
 <p>为了给协议头预留空间，可以使用skb_reserve(skb, head_len)方法，该方法会根据参数将data 指针后移，扩展headroom.</p>
-<p><img src="how-sk-buff-work/skb_after_reserve.png" alt=""></p>
+<p><img src="skb_after_reserve.png" alt=""></p>
 <p>可以通过skb_put(skb, data_len) 方法移动tail 指针，扩展用户数据空间。该方法同时会增加skb-&gt;len.</p>
-<p><img src="how-sk-buff-work/skb_after_user_put.png" alt=""></p>
+<p><img src="skb_after_user_put.png" alt=""></p>
 <p>这些空间都是从tailroom “挤”出来的，因此需要保证tailroom 有足够的空间。另外要注意skb_put() 只能在没有page 的数据的情况下调用。<br>为了添加协议头的内容，需要调用skb_push()方法，这个方法和skb_put()类似，但它是从headroom 挤出空间，data 指针会往前移动，它同样会增加skb-&gt;len.</p>
 <p>添加一个四层头：</p>
-<p><img src="how-sk-buff-work/skb_after_udp_push.png" alt=""></p>
+<p><img src="skb_after_udp_push.png" alt=""></p>
 <p>再添加一个三层头：</p>
-<p><img src="how-sk-buff-work/skb_after_ip_push.png" alt=""></p>
+<p><img src="skb_after_ip_push.png" alt=""></p>
 <p>以上是对于没有page buffer，只有线性buffer 时的操作，对于比较大的包，还需要用到线性buffer 以外的部分。对于部分驱动来讲，有一个copybreak 的字段，当包的大小大于copybreak 时，只将起始一部分数据放入skb-&gt;data（协议头等），而剩余部分会存放于page buffer. 后续添加数据时应该不再调用skb_put()方法，否则数据顺序是有问题的。</p>
 <p>skb_is_nonlinear() 方法可以帮助判断是否存在page buffer，对于有page buffer 的skb 来讲，之前已经提到skb-&gt;data_len 用于指示这部分数据的大小，而之前刚刚提到的通过skb_put() 和skb_push() 方法添加进去的数据的大小就是skb-&gt;len-skb-&gt;data_len，也就是skb_headlen()。</p>
 <p>对于page 的数据，使用skb_frag_t 的数据结构存放。在新版本的内核中，skb_frag_t 是 <code>typedef bio_vec skb_frag_t</code>. </p>
