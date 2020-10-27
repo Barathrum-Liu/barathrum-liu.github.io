@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_after_udp_push.png">
 <meta property="og:image" content="https://llcblog.com/2020/10/26/how-sk-buff-work/skb_after_ip_push.png">
 <meta property="article:published_time" content="2020-10-26T03:18:06.000Z">
-<meta property="article:modified_time" content="2020-10-26T12:08:35.265Z">
+<meta property="article:modified_time" content="2020-10-27T03:29:21.137Z">
 <meta property="article:author" content="Lichen Liu">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="sk_buff">
@@ -189,7 +189,7 @@
 <p>最后是skb 的尾部，这些字段必须位于sk_buff 结构的结尾，而且data 是可变长的部分，也就是前面提到的线性buffer，这里可以存放一部分包的数据。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/* These elements must be at the end, see alloc_skb() for details.  */</span></span><br><span class="line"><span class="keyword">sk_buff_data_t</span>		tail;</span><br><span class="line"><span class="keyword">sk_buff_data_t</span>		<span class="built_in">end</span>;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">char</span>		*head,</span><br><span class="line">			*data;</span><br></pre></td></tr></table></figure>
 
-<p>sk_buff 结尾的这部分空间由以上四个指针控制，分割成三个部分这四个指针都指向sk_buff 结构中的位置：</p>
+<p>这部分线性buffer 由以上四个指针控制，分割成三个部分，这四个指针都指向线性buffer 中的位置：</p>
 <ul>
 <li>head 到data 之间，称为headroom.</li>
 <li>data 到tail 之间，存放包的数据。</li>
