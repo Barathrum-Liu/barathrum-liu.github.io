@@ -145,6 +145,90 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-awssourcecode" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/12/23/awssourcecode/">在AWS 的Amazon Linux 上下载源码</a>
+    </h1>
+  
+
+        
+        <a href="/2019/12/23/awssourcecode/" class="archive-article-date">
+  	<time datetime="2019-12-23T10:59:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Amazon Linux 和Amazon Linux 2 的repo 里，虽然有例如amzn2-core-source/2 这样的repo，但是里面根本没有软件包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">~ % uname -r     </span><br><span class="line">4.14.133-113.105.amzn2.x86_64</span><br><span class="line">~ % yum repolist</span><br><span class="line">Loaded plugins: auto-update-debuginfo, dkms-build-requires, extras_suggestions, langpacks,</span><br><span class="line">              : update-motd</span><br><span class="line">repo id                                repo name                                        status</span><br><span class="line">amzn2-core&#x2F;2&#x2F;x86_64                    Amazon Linux 2 core repository                   17,984</span><br><span class="line">amzn2-core-debuginfo&#x2F;2&#x2F;x86_64          Amazon Linux 2 core repository - debuginfo packa  3,513</span><br><span class="line">amzn2-core-source&#x2F;2                    Amazon Linux 2 core repository - source packages      0</span><br><span class="line">amzn2extra-BCC&#x2F;2&#x2F;x86_64                Amazon Extras repo for BCC                            9</span><br><span class="line">amzn2extra-BCC-debuginfo&#x2F;2&#x2F;x86_64      Amazon Extras debuginfo repo for BCC                  2</span><br><span class="line">amzn2extra-redis4.0&#x2F;2&#x2F;x86_64           Amazon Extras repo for redis4.0                      14</span><br><span class="line">amzn2extra-redis4.0-debuginfo&#x2F;2&#x2F;x86_64 Amazon Extras debuginfo repo for redis4.0             3</span><br><span class="line">amzn2extra-vim&#x2F;2&#x2F;x86_64                Amazon Extras repo for vim                           10</span><br><span class="line">amzn2extra-vim-debuginfo&#x2F;2&#x2F;x86_64      Amazon Extras debuginfo repo for vim                  2</span><br><span class="line">danstiner_softu2f&#x2F;x86_64               danstiner_softu2f                                     0</span><br><span class="line">danstiner_softu2f-source               danstiner_softu2f-source                              0</span><br><span class="line">repolist: 21,537</span><br></pre></td></tr></table></figure>
+
+<p>其实源代码还是在的，只是要用yumdownloader 来下载:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ % yumdownloader --source kernel</span><br></pre></td></tr></table></figure>
+
+<p>这个在<a href="https://aws.amazon.com/amazon-linux-ami/faqs/#source" target="_blank" rel="noopener">AWS 的FAQ</a>里已经说了，但很多人（包括我）一开始找不到。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Linux</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">AWS</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Kernel</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-test" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -307,7 +391,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2020 Lichen Liu
+    		&copy; 2021 Lichen Liu
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -459,6 +543,18 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">ovs</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">font</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">manjaro</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">坑</a>
               </li>
             
             <div class="clearfix"></div>
