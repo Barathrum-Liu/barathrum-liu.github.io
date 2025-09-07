@@ -1,55 +1,223 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  
+<html lang="en" dir="auto">
 
-  <title>
-    
-      Posts
-    
-  </title>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Posts | LLC blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="Posts - LLC blog">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/posts/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
 
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
 
-  <link rel="shortcut icon" type="image/x-icon" href="/" />
-  
-  
-  
-  <link rel="stylesheet" href="/css/main.51652302d3a998bf7887aed5c2cf89141bbebdf45a2c8f87b0717a3cf4f51c4e53c694c328fb1de78c3a625a1c01f80745bf1f2f42c040647a245cbbb6c2d1d7.css" integrity="sha512-UWUjAtOpmL94h67Vws&#43;JFBu&#43;vfRaLI&#43;HsHF6PPT1HE5TxpTDKPsd54w6YlocAfgHRb8fL0LAQGR6JFy7tsLR1w==" />
-  
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
 </head>
-<body a="auto">
-        <main class="page-content" aria-label="Content">
-            <div class="w">
-                <div class="post-meta">
-                    <a href="/">&lt;-</a>
 
-                    <p>
-                        <time datetime="2025-08-13 00:00:00 &#43;0000 UTC">
-                            2025-08-13
-                        </time>
-                    </p>
-                </div>
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
 
-<h1>Posts</h1>
+</script>
 
-
-
-
-
-    
-    <ul><li>
-            <span>2025-08-13</span>
-            <a href="/posts/hello-world/">Hello world</a>
-        </li>
-        
-    </ul>
-
-
-
-
-
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="LLC blog (Alt + H)">LLC blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
             </div>
-        </main>
-    </body></html>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    Posts
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Another hello world
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>test heading heading 3</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-13 00:00:00 +0000 UTC'>August 13, 2025</span>&nbsp;·&nbsp;Lichen Liu</footer>
+  <a class="entry-link" aria-label="post link to Another hello world" href="http://localhost:1313/posts/another-hello-world/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Hello world
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>欢迎来到我的博客 这是我的第一篇文章，使用 Org-roam &#43; Hugo 生成！
+Org Mode 的一些特性 列表 test1 test2 test3 表格 col1 col2 test test2 test3 test4 代码块 #include &lt;stdio.h&gt; int main(){ printf(&#34;Hello, world!&#34;); return 0; } </p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-13 00:00:00 +0000 UTC'>August 13, 2025</span>&nbsp;·&nbsp;Lichen Liu</footer>
+  <a class="entry-link" aria-label="post link to Hello world" href="http://localhost:1313/posts/hello-world/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">海博馆
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>今天海博馆半日游，体验其实还不错。作为一个博物馆来说，里面的内容和设置都是符合我的预期的。 虽然付费项目没玩（带着桃桃基本也没法玩），单就内容丰富程度来说，如果愿意都看一遍，三个小时的内容量还是有的。 里面的库迪咖啡价格在外面的两倍左右，9.9 的生椰拿铁里面是卖 17.9, 冬瓜没舍得让我买。 让我惊讶的是里面的展品，我是第一次看这类博物馆，我一直以为里面的动物都是模型，结果看到有些名字旁边用括号模型俩字，让我意识到原来之前的都是标本，然后在一个今日海洋馆里看到科普标本的制作过程，有些惊了，原来这东西做出来是这样的，活了 30 年头一次知道标本原来是做到这种程度，哈哈。 桃桃虽然对一些东西会发出惊讶的声音，但显然没到能对博物馆感兴趣的年龄，逛了半个多小时的时候就开始打盹了，中间睡了半个小时，后面精神极佳，很捧场的看到新鲜东西就发出惊讶的叫声。 讲道理作为预约就能进的免费博物馆，可以给到 4/5 分。扣掉一分是因为没有能让我十分惊讶或者感到非常有趣的部分。 住的近的话完全可以来吹吹风喝杯咖啡，不过注意停车场收费，4元/小时，12 封顶。
+相比较而言，我对科技部分更感兴趣一些，人文历史稍微看了下，基本和初高中历史课本讲的都差不多，除了现代中国海洋开发那部分没学过，其他的基本都是历史课本上的故事，不过因为文物、标本等原件在这，还是更有趣一点的。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-13 00:00:00 +0000 UTC'>August 13, 2025</span>&nbsp;·&nbsp;Lichen Liu</footer>
+  <a class="entry-link" aria-label="post link to 海博馆" href="http://localhost:1313/posts/national-maritime-museum/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">LLC blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
