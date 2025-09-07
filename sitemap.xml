@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/another-hello-world/</loc>
+    <loc>https://llcblog.cn/posts/another-hello-world/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://llcblog.cn/categories/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/emacs/</loc>
+    <loc>https://llcblog.cn/tags/emacs/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/hello-world/</loc>
+    <loc>https://llcblog.cn/posts/hello-world/</loc>
     <lastmod>2025-08-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/hugo/</loc>
+    <loc>https://llcblog.cn/tags/hugo/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://llcblog.cn/</loc>
     <lastmod>2025-09-07T22:06:59+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
+    <loc>https://llcblog.cn/posts/</loc>
     <lastmod>2025-09-07T22:06:59+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://llcblog.cn/tags/</loc>
     <lastmod>2025-09-07T22:06:59+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/test/</loc>
+    <loc>https://llcblog.cn/categories/test/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/travel/</loc>
+    <loc>https://llcblog.cn/tags/travel/</loc>
     <lastmod>2025-09-07T22:06:59+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/national-maritime-museum/</loc>
+    <loc>https://llcblog.cn/posts/national-maritime-museum/</loc>
     <lastmod>2025-09-07T22:06:59+08:00</lastmod>
   </url>
 </urlset>
