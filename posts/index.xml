@@ -2,30 +2,27 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on LLC blog</title>
-    <link>http://localhost:1313/posts/</link>
+    <link>https://llcblog.cn/posts/</link>
     <description>Recent content in Posts on LLC blog</description>
     <generator>Hugo -- 0.150.0</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Sat, 27 Sep 2025 16:56:33 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 27 Sep 2025 17:01:22 +0800</lastBuildDate>
+    <atom:link href="https://llcblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>nixos nixpkgs unstable 更新不稳定的一些解决尝试</title>
-      <link>http://localhost:1313/posts/nixpkgs-unstable-channel-update-failure-tips/</link>
+      <link>https://llcblog.cn/posts/nixpkgs-unstable-channel-update-failure-tips/</link>
       <pubDate>Sat, 27 Sep 2025 16:56:00 +0800</pubDate>
-      <guid>http://localhost:1313/posts/nixpkgs-unstable-channel-update-failure-tips/</guid>
+      <guid>https://llcblog.cn/posts/nixpkgs-unstable-channel-update-failure-tips/</guid>
       <description>&lt;p&gt;我的 &lt;code&gt;nixos&lt;/code&gt; 用的是 &lt;code&gt;nixpkgs-unstable&lt;/code&gt; channel, 虽然包比 stable 的更新快一点，但是确实如同它的名字，非常不稳定，基本上我每半个月就遇到一次更新故障，其中 &lt;code&gt;qemu&lt;/code&gt; + &lt;code&gt;ceph&lt;/code&gt; 更是挂了两次。
 下面是我从网上抄来的一些可能有用的修复方法。&lt;/p&gt;
 &lt;h2 id=&#34;github-pr&#34;&gt;Github PR&lt;/h2&gt;
 &lt;p&gt;讲道理因为 &lt;code&gt;nixos&lt;/code&gt; 的可复现性，出问题的时候肯定不止你自己的环境有问题，首先肯定是先去 &lt;a href=&#34;https://github.com/NixOS/nixpkgs/issues&#34;&gt;GitHub&lt;/a&gt; 看看是不是别人已经提了 issue, 作为一个伸手党，说不定还可以直接找到修复方法。
-有时候已经有 PR 修这个问题了，但是还没合并你要的 branch, 可以从下面的链接里看 pr 的状态&lt;/p&gt;
-&lt;h3 id=&#34;查看一个-pr-是否被-merge&#34;&gt;查看一个 pr 是否被 merge&lt;/h3&gt;
+有时候已经有 PR 修这个问题了，但是还没合并你要的 branch, 可以从下面的链接里看 pr 的状态：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://status.nixos.org&#34;&gt;nixos status&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;查看一个 pr 是否被 merge  &lt;a href=&#34;https://nixpk.gs/pr-tracker.html?pr=&#34;&gt;pr-tracker&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;a href=&#34;https://nixpk.gs/pr-tracker.html?pr=&#34;&gt;- pr-tracker&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;override&#34;&gt;Override&lt;/h2&gt;
-&lt;p&gt;如果是因为包的可选依赖故障，可以通过 override 直接干掉
-&lt;a href=&#34;https://discourse.nixos.org/t/error-after-update-flake-about-python3-11-tkinter/69328/3&#34;&gt;https://discourse.nixos.org/t/error-after-update-flake-about-python3-11-tkinter/69328/3&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;如果是因为包的可选依赖故障，可以通过 override 直接干掉，这有一个 &lt;a href=&#34;https://discourse.nixos.org/t/error-after-update-flake-about-python3-11-tkinter/69328/3&#34;&gt;例子&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;通过 override 修改包的依赖，从而避免使用 nixpkgs-unstable 时更新不了。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-nix&#34; data-lang=&#34;nix&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;//&lt;/span&gt; In your &lt;span style=&#34;color:#e6db74&#34;&gt;/etc/nixos/configuration.nix&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
@@ -47,9 +44,9 @@
     </item>
     <item>
       <title>给 PVE 上的飞牛 NAS 虚拟机换硬盘</title>
-      <link>http://localhost:1313/posts/replace-disk-for-fnos-on-pve/</link>
+      <link>https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/</link>
       <pubDate>Sat, 27 Sep 2025 16:37:00 +0800</pubDate>
-      <guid>http://localhost:1313/posts/replace-disk-for-fnos-on-pve/</guid>
+      <guid>https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/</guid>
       <description>&lt;h2 id=&#34;一些背景&#34;&gt;一些背景&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;我有一个主机跑 PVE , 我本来有一块 8T 的机械硬盘，分了 4T 给飞牛。&lt;/li&gt;
@@ -76,17 +73,17 @@
     </item>
     <item>
       <title>Another hello world</title>
-      <link>http://localhost:1313/posts/another-hello-world/</link>
+      <link>https://llcblog.cn/posts/another-hello-world/</link>
       <pubDate>Wed, 13 Aug 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/another-hello-world/</guid>
+      <guid>https://llcblog.cn/posts/another-hello-world/</guid>
       <description>&lt;h2 id=&#34;test-heading&#34;&gt;test heading&lt;/h2&gt;
 &lt;h3 id=&#34;heading-3&#34;&gt;heading 3&lt;/h3&gt;</description>
     </item>
     <item>
       <title>Hello world</title>
-      <link>http://localhost:1313/posts/hello-world/</link>
+      <link>https://llcblog.cn/posts/hello-world/</link>
       <pubDate>Wed, 13 Aug 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/hello-world/</guid>
+      <guid>https://llcblog.cn/posts/hello-world/</guid>
       <description>&lt;h2 id=&#34;欢迎来到我的博客&#34;&gt;欢迎来到我的博客&lt;/h2&gt;
 &lt;p&gt;这是我的第一篇文章，使用 Org-roam + Hugo 生成！&lt;/p&gt;
 &lt;h2 id=&#34;org-mode-的一些特性&#34;&gt;Org Mode 的一些特性&lt;/h2&gt;
@@ -130,9 +127,9 @@
     </item>
     <item>
       <title>海博馆</title>
-      <link>http://localhost:1313/posts/national-maritime-museum/</link>
+      <link>https://llcblog.cn/posts/national-maritime-museum/</link>
       <pubDate>Wed, 13 Aug 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/national-maritime-museum/</guid>
+      <guid>https://llcblog.cn/posts/national-maritime-museum/</guid>
       <description>&lt;p&gt;今天海博馆半日游，体验其实还不错。作为一个博物馆来说，里面的内容和设置都是符合我的预期的。
 虽然付费项目没玩（带着桃桃基本也没法玩），单就内容丰富程度来说，如果愿意都看一遍，三个小时的内容量还是有的。
 里面的库迪咖啡价格在外面的两倍左右，9.9 的生椰拿铁里面是卖 17.9, 冬瓜没舍得让我买。
