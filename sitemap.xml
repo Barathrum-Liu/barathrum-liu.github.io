@@ -2,37 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://llcblog.cn/posts/another-hello-world/</loc>
+    <loc>http://localhost:1313/posts/another-hello-world/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/categories/</loc>
+    <loc>http://localhost:1313/categories/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/tags/emacs/</loc>
+    <loc>http://localhost:1313/tags/emacs/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/posts/hello-world/</loc>
+    <loc>http://localhost:1313/posts/hello-world/</loc>
     <lastmod>2025-08-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/tags/hugo/</loc>
+    <loc>http://localhost:1313/tags/hugo/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/</loc>
-    <lastmod>2025-09-07T22:06:59+08:00</lastmod>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2025-09-27T16:30:50+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/posts/</loc>
-    <lastmod>2025-09-07T22:06:59+08:00</lastmod>
+    <loc>http://localhost:1313/tags/nas/</loc>
+    <lastmod>2025-09-27T16:30:50+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/tags/</loc>
-    <lastmod>2025-09-07T22:06:59+08:00</lastmod>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2025-09-27T16:30:50+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/categories/test/</loc>
+    <loc>http://localhost:1313/tags/pve/</loc>
+    <lastmod>2025-09-27T16:30:50+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2025-09-27T16:30:50+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/test/</loc>
     <lastmod>2025-08-13T21:36:09+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/tags/travel/</loc>
+    <loc>http://localhost:1313/tags/travel/</loc>
     <lastmod>2025-09-07T22:06:59+08:00</lastmod>
   </url><url>
-    <loc>https://llcblog.cn/posts/national-maritime-museum/</loc>
+    <loc>http://localhost:1313/posts/national-maritime-museum/</loc>
     <lastmod>2025-09-07T22:06:59+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/replace-disk-for-fnos-on-pve/</loc>
+    <lastmod>2025-09-27T16:30:50+08:00</lastmod>
   </url>
 </urlset>

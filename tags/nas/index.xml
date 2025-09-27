@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Nas on LLC blog</title>
+    <link>http://localhost:1313/tags/nas/</link>
+    <description>Recent content in Nas on LLC blog</description>
+    <generator>Hugo -- 0.150.0</generator>
+    <language>zh-ch</language>
+    <lastBuildDate>Sat, 27 Sep 2025 16:30:50 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/nas/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>给 PVE 上的飞牛 NAS 虚拟机换硬盘</title>
+      <link>http://localhost:1313/posts/replace-disk-for-fnos-on-pve/</link>
+      <pubDate>Wed, 13 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/replace-disk-for-fnos-on-pve/</guid>
+      <description>&lt;h2 id=&#34;一些背景&#34;&gt;一些背景&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;我有一个主机跑 PVE , 我本来有一块 8T 的机械硬盘，分了 4T 给飞牛。&lt;/li&gt;
+&lt;li&gt;后来感觉 4T 可能不够，就又买了一个 8T 的盘，又从新盘分了 4T 给飞牛，在里面用的是 lvm + btrfs.&lt;/li&gt;
+&lt;li&gt;最近想着我本来就两块磁盘，而且 lvm 还是 stripe 的，没有 mirror, 没有 raid, 用两块磁盘纯属徒增故障率，就想把其中一块直通得了，总容量还是 8t 左右。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;开始操作&#34;&gt;开始操作&lt;/h2&gt;
+&lt;p&gt;操作的步骤如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;因为我的数据是 5t 多，直接 &lt;code&gt;pvmove&lt;/code&gt; 的话搞不定，于是先从 pve 上创建一个 2T 的磁盘给飞牛，用于周转。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#75715e&#34;&gt;# 备份数据，删除了一部分没用的，保证文件系统用量在去除一个pv 后不会爆掉&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#75715e&#34;&gt;# 在pve 上加盘，在飞牛上加入新pv, 用于周转&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     pvcreate /dev/sde
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     vgextend vg-name /dev/sde
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我怕出故障丢数据，就把飞牛上的一些数据往移动硬盘上备份了一份，结果这速度实在是太感人了，1.8T 的数据备份了 4 个多小时。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;缩文件系统&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     &lt;span style=&#34;color:#75715e&#34;&gt;# 停掉fnos 上的占用服务磁盘的服务，卸载 /vol1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     umount -l /vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     btrfs filesystem resize -4t /vol1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;差不多用了 5 个小时！&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
