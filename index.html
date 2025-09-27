@@ -2,25 +2,25 @@
 <html lang="en" dir="auto">
 
 <head>
-	<meta name="generator" content="Hugo 0.150.0"><meta charset="utf-8">
+	<meta name="generator" content="Hugo 0.150.0"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>LLC blog</title>
 
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="https://llcblog.cn/">
+<link rel="canonical" href="http://localhost:1313/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://llcblog.cn/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://llcblog.cn/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://llcblog.cn/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://llcblog.cn/apple-touch-icon.png">
-<link rel="mask-icon" href="https://llcblog.cn/safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://llcblog.cn/index.xml">
-<link rel="alternate" hreflang="en" href="https://llcblog.cn/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/">
 <noscript>
     <style>
         #theme-toggle,
@@ -57,28 +57,7 @@
         }
 
     </style>
-</noscript><meta property="og:url" content="https://llcblog.cn/">
-  <meta property="og:site_name" content="LLC blog">
-  <meta property="og:title" content="LLC blog">
-  <meta property="og:locale" content="zh-ch">
-  <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LLC blog">
-<meta name="twitter:description" content="">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "LLC blog",
-  "url": "https://llcblog.cn/",
-  "description": "",
-  "logo": "https://llcblog.cn/favicon.ico",
-  "sameAs": [
-      
-  ]
-}
-</script>
+</noscript>
 </head>
 
 <body class="list" id="top">
@@ -96,7 +75,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://llcblog.cn/" accesskey="h" title="LLC blog (Alt + H)">LLC blog</a>
+            <a href="http://localhost:1313/" accesskey="h" title="LLC blog (Alt + H)">LLC blog</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -128,6 +107,24 @@
 
 <article class="first-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">nixos nixpkgs unstable 更新不稳定的一些解决尝试
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>我的 nixos 用的是 nixpkgs-unstable channel, 虽然包比 stable 的更新快一点，但是确实如同它的名字，非常不稳定，基本上我每半个月就遇到一次更新故障，其中 qemu &#43; ceph 更是挂了两次。 下面是我从网上抄来的一些可能有用的修复方法。
+Github PR 讲道理因为 nixos 的可复现性，出问题的时候肯定不止你自己的环境有问题，首先肯定是先去 GitHub 看看是不是别人已经提了 issue, 作为一个伸手党，说不定还可以直接找到修复方法。 有时候已经有 PR 修这个问题了，但是还没合并你要的 branch, 可以从下面的链接里看 pr 的状态
+查看一个 pr 是否被 merge nixos status - pr-tracker
+Override 如果是因为包的可选依赖故障，可以通过 override 直接干掉 https://discourse.nixos.org/t/error-after-update-flake-about-python3-11-tkinter/69328/3
+通过 override 修改包的依赖，从而避免使用 nixpkgs-unstable 时更新不了。
+// In your /etc/nixos/configuration.nix environment.systemPackages = with pkgs; [ # ... other packages you have ... # qemu_full // REMOVE OR COMMENT OUT THIS LINE # And add this instead: (pkgs.qemu_full.override { enableDocs = false; cephSupport = false; }) # ... other packages ... ]; Patching nix 也提供了 patch 的方法，但很遗憾因为我起手抄的配置应用这个比较麻烦，而且我遇到的是依赖问题，我还是用了 Override 的方法。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-09-27 16:56:00 +0800 CST'>September 27, 2025</span>&nbsp;·&nbsp;Lichen Liu</footer>
+  <a class="entry-link" aria-label="post link to nixos nixpkgs unstable 更新不稳定的一些解决尝试" href="http://localhost:1313/posts/nixpkgs-unstable-channel-update-failure-tips/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">给 PVE 上的飞牛 NAS 虚拟机换硬盘
     </h2>
   </header>
@@ -140,7 +137,7 @@
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-09-27 16:37:00 +0800 CST'>September 27, 2025</span>&nbsp;·&nbsp;Lichen Liu</footer>
-  <a class="entry-link" aria-label="post link to 给 PVE 上的飞牛 NAS 虚拟机换硬盘" href="https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/"></a>
+  <a class="entry-link" aria-label="post link to 给 PVE 上的飞牛 NAS 虚拟机换硬盘" href="http://localhost:1313/posts/replace-disk-for-fnos-on-pve/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -152,7 +149,7 @@
     <p>test heading heading 3</p>
   </div>
   <footer class="entry-footer"><span title='2025-08-13 00:00:00 +0000 UTC'>August 13, 2025</span>&nbsp;·&nbsp;Lichen Liu</footer>
-  <a class="entry-link" aria-label="post link to Another hello world" href="https://llcblog.cn/posts/another-hello-world/"></a>
+  <a class="entry-link" aria-label="post link to Another hello world" href="http://localhost:1313/posts/another-hello-world/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -165,7 +162,7 @@
 Org Mode 的一些特性 列表 test1 test2 test3 表格 col1 col2 test test2 test3 test4 代码块 #include &lt;stdio.h&gt; int main(){ printf(&#34;Hello, world!&#34;); return 0; } </p>
   </div>
   <footer class="entry-footer"><span title='2025-08-13 00:00:00 +0000 UTC'>August 13, 2025</span>&nbsp;·&nbsp;Lichen Liu</footer>
-  <a class="entry-link" aria-label="post link to Hello world" href="https://llcblog.cn/posts/hello-world/"></a>
+  <a class="entry-link" aria-label="post link to Hello world" href="http://localhost:1313/posts/hello-world/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -179,12 +176,12 @@ Org Mode 的一些特性 列表 test1 test2 test3 表格 col1 col2 test test2 te
 </p>
   </div>
   <footer class="entry-footer"><span title='2025-08-13 00:00:00 +0000 UTC'>August 13, 2025</span>&nbsp;·&nbsp;Lichen Liu</footer>
-  <a class="entry-link" aria-label="post link to 海博馆" href="https://llcblog.cn/posts/national-maritime-museum/"></a>
+  <a class="entry-link" aria-label="post link to 海博馆" href="http://localhost:1313/posts/national-maritime-museum/"></a>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="https://llcblog.cn/">LLC blog</a></span> · 
+        <span>&copy; 2025 <a href="http://localhost:1313/">LLC blog</a></span> · 
 
     <span>
         Powered by

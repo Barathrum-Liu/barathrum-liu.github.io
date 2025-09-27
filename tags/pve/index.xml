@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Pve on LLC blog</title>
-    <link>https://llcblog.cn/tags/pve/</link>
+    <link>http://localhost:1313/tags/pve/</link>
     <description>Recent content in Pve on LLC blog</description>
     <generator>Hugo -- 0.150.0</generator>
     <language>zh-ch</language>
     <lastBuildDate>Sat, 27 Sep 2025 16:38:04 +0800</lastBuildDate>
-    <atom:link href="https://llcblog.cn/tags/pve/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/pve/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>给 PVE 上的飞牛 NAS 虚拟机换硬盘</title>
-      <link>https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/</link>
+      <link>http://localhost:1313/posts/replace-disk-for-fnos-on-pve/</link>
       <pubDate>Sat, 27 Sep 2025 16:37:00 +0800</pubDate>
-      <guid>https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/</guid>
+      <guid>http://localhost:1313/posts/replace-disk-for-fnos-on-pve/</guid>
       <description>&lt;h2 id=&#34;一些背景&#34;&gt;一些背景&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;我有一个主机跑 PVE , 我本来有一块 8T 的机械硬盘，分了 4T 给飞牛。&lt;/li&gt;
