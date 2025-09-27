@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>给 PVE 上的飞牛 NAS 虚拟机换硬盘 | LLC blog</title>
 <meta name="keywords" content="nas, pve">
 <meta name="description" content="一些背景
@@ -31,16 +31,16 @@
      btrfs filesystem resize -4t /vol1
 差不多用了 5 个小时！">
 <meta name="author" content="Lichen Liu">
-<link rel="canonical" href="http://localhost:1313/posts/replace-disk-for-fnos-on-pve/">
+<link rel="canonical" href="https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<link rel="icon" href="https://llcblog.cn/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://llcblog.cn/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://llcblog.cn/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://llcblog.cn/apple-touch-icon.png">
+<link rel="mask-icon" href="https://llcblog.cn/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/replace-disk-for-fnos-on-pve/">
+<link rel="alternate" hreflang="en" href="https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/">
 <noscript>
     <style>
         #theme-toggle,
@@ -77,7 +77,101 @@
         }
 
     </style>
-</noscript>
+</noscript><meta property="og:url" content="https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/">
+  <meta property="og:site_name" content="LLC blog">
+  <meta property="og:title" content="给 PVE 上的飞牛 NAS 虚拟机换硬盘">
+  <meta property="og:description" content="一些背景 我有一个主机跑 PVE , 我本来有一块 8T 的机械硬盘，分了 4T 给飞牛。 后来感觉 4T 可能不够，就又买了一个 8T 的盘，又从新盘分了 4T 给飞牛，在里面用的是 lvm &#43; btrfs. 最近想着我本来就两块磁盘，而且 lvm 还是 stripe 的，没有 mirror, 没有 raid, 用两块磁盘纯属徒增故障率，就想把其中一块直通得了，总容量还是 8t 左右。 开始操作 操作的步骤如下：
+因为我的数据是 5t 多，直接 pvmove 的话搞不定，于是先从 pve 上创建一个 2T 的磁盘给飞牛，用于周转。
+# 备份数据，删除了一部分没用的，保证文件系统用量在去除一个pv 后不会爆掉 # 在pve 上加盘，在飞牛上加入新pv, 用于周转 pvcreate /dev/sde vgextend vg-name /dev/sde 我怕出故障丢数据，就把飞牛上的一些数据往移动硬盘上备份了一份，结果这速度实在是太感人了，1.8T 的数据备份了 4 个多小时。
+缩文件系统
+# 停掉fnos 上的占用服务磁盘的服务，卸载 /vol1 umount -l /vol1 btrfs filesystem resize -4t /vol1 差不多用了 5 个小时！">
+  <meta property="og:locale" content="zh-ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-09-27T16:37:00+08:00">
+    <meta property="article:modified_time" content="2025-09-27T16:38:04+08:00">
+    <meta property="article:tag" content="Nas">
+    <meta property="article:tag" content="Pve">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="给 PVE 上的飞牛 NAS 虚拟机换硬盘">
+<meta name="twitter:description" content="一些背景
+
+我有一个主机跑 PVE , 我本来有一块 8T 的机械硬盘，分了 4T 给飞牛。
+后来感觉 4T 可能不够，就又买了一个 8T 的盘，又从新盘分了 4T 给飞牛，在里面用的是 lvm &#43; btrfs.
+最近想着我本来就两块磁盘，而且 lvm 还是 stripe 的，没有 mirror, 没有 raid, 用两块磁盘纯属徒增故障率，就想把其中一块直通得了，总容量还是 8t 左右。
+
+开始操作
+操作的步骤如下：
+
+
+因为我的数据是 5t 多，直接 pvmove 的话搞不定，于是先从 pve 上创建一个 2T 的磁盘给飞牛，用于周转。
+     # 备份数据，删除了一部分没用的，保证文件系统用量在去除一个pv 后不会爆掉
+     # 在pve 上加盘，在飞牛上加入新pv, 用于周转
+     pvcreate /dev/sde
+     vgextend vg-name /dev/sde
+我怕出故障丢数据，就把飞牛上的一些数据往移动硬盘上备份了一份，结果这速度实在是太感人了，1.8T 的数据备份了 4 个多小时。
+
+
+缩文件系统
+     # 停掉fnos 上的占用服务磁盘的服务，卸载 /vol1
+     umount -l /vol1
+     btrfs filesystem resize -4t /vol1
+差不多用了 5 个小时！">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://llcblog.cn/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "给 PVE 上的飞牛 NAS 虚拟机换硬盘",
+      "item": "https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "给 PVE 上的飞牛 NAS 虚拟机换硬盘",
+  "name": "给 PVE 上的飞牛 NAS 虚拟机换硬盘",
+  "description": "一些背景 我有一个主机跑 PVE , 我本来有一块 8T 的机械硬盘，分了 4T 给飞牛。 后来感觉 4T 可能不够，就又买了一个 8T 的盘，又从新盘分了 4T 给飞牛，在里面用的是 lvm + btrfs. 最近想着我本来就两块磁盘，而且 lvm 还是 stripe 的，没有 mirror, 没有 raid, 用两块磁盘纯属徒增故障率，就想把其中一块直通得了，总容量还是 8t 左右。 开始操作 操作的步骤如下：\n因为我的数据是 5t 多，直接 pvmove 的话搞不定，于是先从 pve 上创建一个 2T 的磁盘给飞牛，用于周转。\n# 备份数据，删除了一部分没用的，保证文件系统用量在去除一个pv 后不会爆掉 # 在pve 上加盘，在飞牛上加入新pv, 用于周转 pvcreate /dev/sde vgextend vg-name /dev/sde 我怕出故障丢数据，就把飞牛上的一些数据往移动硬盘上备份了一份，结果这速度实在是太感人了，1.8T 的数据备份了 4 个多小时。\n缩文件系统\n# 停掉fnos 上的占用服务磁盘的服务，卸载 /vol1 umount -l /vol1 btrfs filesystem resize -4t /vol1 差不多用了 5 个小时！\n",
+  "keywords": [
+    "nas", "pve"
+  ],
+  "articleBody": "一些背景 我有一个主机跑 PVE , 我本来有一块 8T 的机械硬盘，分了 4T 给飞牛。 后来感觉 4T 可能不够，就又买了一个 8T 的盘，又从新盘分了 4T 给飞牛，在里面用的是 lvm + btrfs. 最近想着我本来就两块磁盘，而且 lvm 还是 stripe 的，没有 mirror, 没有 raid, 用两块磁盘纯属徒增故障率，就想把其中一块直通得了，总容量还是 8t 左右。 开始操作 操作的步骤如下：\n因为我的数据是 5t 多，直接 pvmove 的话搞不定，于是先从 pve 上创建一个 2T 的磁盘给飞牛，用于周转。\n# 备份数据，删除了一部分没用的，保证文件系统用量在去除一个pv 后不会爆掉 # 在pve 上加盘，在飞牛上加入新pv, 用于周转 pvcreate /dev/sde vgextend vg-name /dev/sde 我怕出故障丢数据，就把飞牛上的一些数据往移动硬盘上备份了一份，结果这速度实在是太感人了，1.8T 的数据备份了 4 个多小时。\n缩文件系统\n# 停掉fnos 上的占用服务磁盘的服务，卸载 /vol1 umount -l /vol1 btrfs filesystem resize -4t /vol1 差不多用了 5 个小时！\n转移数据，移除硬盘 2\npvmove /dev/sdc1 vgreduce vg-name /dev/sdc1 pvremove /dev/sdc1 这一步用了将近 8 个小时，速度差不多两小时 1T, 合 145MB/s.\nPVE 上删除这个虚拟磁盘，然后整个磁盘直通给给飞牛\n# pve 上执行 # source: https://pve.proxmox.com/wiki/Passthrough_Physical_Disk_to_Virtual_Machine_(VM) qm set 107 -scsi2 /dev/disk/by-id/ata-ST8000VN004-3CP101_WRQ0QV3T 把数据都转移到直通的磁盘上，移除之前的 4T 虚拟磁盘和用于周转的 2T 磁盘\npvcreate /dev/sdc # 转移数据 pvmove /dev/sdb1 vgreduce vg-name /dev/sdb1 pvremove /dev/sdb1 # 周转磁盘 pvmove /dev/sde vgreduce vg-name /dev/sde pvremove /dev/sde 又是八个小时。。。\nbtrfs 扩文件系统\nbtrfs filesystem resize max /vol1 飞牛关机，PVE 移除磁盘，重启飞牛，大功告成！\n完事 整个过程其实比较常规，而且运气不错没丢数据，但是其中几个 pvmove 耗费了大量时间，前后花了一天一夜才完成。不得不说 btrfs 扩缩文件系统都挺方便的。\n而且看起来也不应该新建一个周转磁盘，直接扩原来的磁盘得了，还不用盯着啥时候 pvmove 结束。\n",
+  "wordCount" : "145",
+  "inLanguage": "en",
+  "datePublished": "2025-09-27T16:37:00+08:00",
+  "dateModified": "2025-09-27T16:38:04+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Lichen Liu"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://llcblog.cn/posts/replace-disk-for-fnos-on-pve/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "LLC blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://llcblog.cn/favicon.ico"
+    }
+  }
+}
+</script>
 </head>
 
 <body class="" id="top">
@@ -95,7 +189,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="LLC blog (Alt + H)">LLC blog</a>
+            <a href="https://llcblog.cn/" accesskey="h" title="LLC blog (Alt + H)">LLC blog</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -131,7 +225,7 @@
     <h1 class="post-title entry-hint-parent">
       给 PVE 上的飞牛 NAS 虚拟机换硬盘
     </h1>
-    <div class="post-meta"><span title='2025-08-13 00:00:00 +0000 UTC'>August 13, 2025</span>&nbsp;·&nbsp;Lichen Liu
+    <div class="post-meta"><span title='2025-09-27 16:37:00 +0800 CST'>September 27, 2025</span>&nbsp;·&nbsp;Lichen Liu
 
 </div>
   </header> 
@@ -202,15 +296,15 @@
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="http://localhost:1313/tags/nas/">Nas</a></li>
-      <li><a href="http://localhost:1313/tags/pve/">Pve</a></li>
+      <li><a href="https://llcblog.cn/tags/nas/">Nas</a></li>
+      <li><a href="https://llcblog.cn/tags/pve/">Pve</a></li>
     </ul>
   </footer>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="http://localhost:1313/">LLC blog</a></span> · 
+        <span>&copy; 2025 <a href="https://llcblog.cn/">LLC blog</a></span> · 
 
     <span>
         Powered by
